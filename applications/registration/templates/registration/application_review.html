@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #202837; 
+    }
+</style>
+<div class="max-w-6xl mx-auto px-4 py-5">
+    <div class="bg-[#202837] rounded-2xl p-6 my-5 shadow-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-center text-gray-400">Review Application</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-200">
+            <div>
+                <p class="font-semibold text-sm mb-1">Business Name:</p>
+                <p class="mb-4">{{ application.business_name }}</p>
+
+                <p class="font-semibold text-sm mb-1">Reference Number:</p>
+                <p class="mb-4">{{ application.reference_number }}</p>
+
+                <p class="font-semibold text-sm mb-1">Registration Number:</p>
+                <p class="mb-4">{{ application.registration_number }}</p>
+
+                <p class="font-semibold text-sm mb-1">KRA PIN:</p>
+                <p class="mb-4">{{ application.kra_pin }}</p>
+
+                <p class="font-semibold text-sm mb-1">Business Address:</p>
+                <p class="mb-4">{{ application.business_address }}</p>
+
+                <p class="font-semibold text-sm mb-1">City:</p>
+                <p class="mb-4">{{ application.city }}</p>
+
+                <p class="font-semibold text-sm mb-1">Country:</p>
+                <p class="mb-4">{{ application.country }}</p>
+            </div>
+
+            <div>
+                <p class="font-semibold text-sm mb-1">Phone Number:</p>
+                <p class="mb-4">{{ application.phone_number }}</p>
+
+                <p class="font-semibold text-sm mb-1">Email Address:</p>
+                <p class="mb-4">{{ application.email_address }}</p>
+
+                <p class="font-semibold text-sm mb-1">Registration Certificate:</p>
+                <p class="mb-4">{{ application.registration_certificate }}</p>
+
+                <p class="font-semibold text-sm mb-1">Trading License:</p>
+                <p class="mb-4">{{ application.trading_license }}</p>
+
+                <p class="font-semibold text-sm mb-1">Tax Compliance Certificate:</p>
+                <p class="mb-4">{{ application.tax_compliance_certificate }}</p>
+            </div>
+        </div>
+
+        <h3 class="text-lg font-semibold mt-6 mb-4 text-gray-400">Contact Persons</h3>
+        <ul class="list-disc pl-6 text-gray-200">
+            {% for contact in application.contact_persons.all %}
+            <li class="mb-2">{{ contact.first_name }} {{ contact.last_name }} - {{ contact.mobile_number }} - {{ contact.email_address }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3 class="text-lg font-semibold mt-6 mb-4 text-gray-400">Credit Cards</h3>
+        <ul class="list-disc pl-6 text-gray-200">
+            {% for card in application.credit_cards.all %}
+            <li class="mb-2">{{ card.card_type }} - XXXX XXXX XXXX {{ card.last_8_digits }}</li>
+            {% endfor %}
+        </ul>
+
+        {% if not is_rejected %}
+        <form method="post" class="mt-8 flex justify-center gap-4">
+            {% csrf_token %}
+            {% if application.status != 'approved' %}
+            <button type="submit" name="approve" value="true" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition ease-in-out duration-150">Approve</button>
+            {% endif %}
+            <button type="submit" name="reject" value="true" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition ease-in-out duration-150">Reject</button>
+        </form>
+        {% endif %}
+
+        <div class="mt-4 flex justify-center">
+            <a href="{% url 'dashboard_view' %}" class="bg-gray-700 text-gray-300 py-2 px-4 rounded hover:bg-gray-600 transition ease-in-out duration-150">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #202837;
+    }
+</style>
+
+<div class="py-4">
+    <a href="{% url 'dashboard_view' %}" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition ease-in-out duration-150">Back to Dashboard</a>
+</div>
+
+    <h2 class="text-xl font-medium text-white">Pending Applications</h2>
+
+    <div class="flex flex-col mt-8">
+
+        <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+
+            <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-800">
+
+                <table class="min-w-full">
+
+                    <thead class="bg-gray-800">
+
+                        <tr>
+                            <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Business Name</th>
+                            <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Ref No</th>
+                            <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Phone No</th>
+                            <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="bg-gray-800">
+
+                        {% for application in pending_applications %}
+
+                            <tr>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.business_name }}</td>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-blue-500">{{ application.reference_number }}</td>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.email_address }}</td>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.phone_number }}</td>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-400 text-gray-900">Pending</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800">
+                                    <a href="{% url 'application_review_view' application.id %}" class="text-xs leading-4 font-medium rounded px-3 py-1 bg-blue-600 hover:bg-blue-700 transition ease-in-out duration-150">Review</a>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

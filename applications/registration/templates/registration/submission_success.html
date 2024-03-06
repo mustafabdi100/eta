@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen bg-blue-50 flex flex-col justify-center items-center p-4">
+    <div class="max-w-md w-full bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl md:text-2xl font-semibold text-blue-800 mb-4">Submission Successful</h2>
+        <p class="text-md text-gray-700">Your application has been submitted successfully. Your reference number is <strong class="font-semibold text-blue-600">{{ reference_number }}</strong>.</p>
+    </div>
+</div>
+{% endblock %}

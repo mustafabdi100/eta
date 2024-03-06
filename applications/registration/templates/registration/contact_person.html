@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load form_tags %}  <!-- Make sure you have created and loaded the custom template tag as explained previously -->
+{% block content %}
+{%load static%}
+<div class="flex items-center justify-center min-h-screen bg-gray-50">
+  <div class="max-w-md w-full space-y-8 p-10 rounded-md shadow-lg bg-white">
+    <div class="text-center">
+      <h2 class="text-lg font-semibold text-gray-900">
+        Agencies applying for eTA must seek approval first by applying through the form below
+      </h2>
+      <img src="{% static 'images/logo.png' %}" alt="Logo" class="mx-auto mt-4" style="max-width: 100px;">
+      <h4 class="text-lg font-semibold text-gray-600">
+        Contact Details
+      </h4>
+    </div>
+    {% if can_add_more %}
+    <form class="mt-8 space-y-6" method="post">
+      {% csrf_token %}
+      <div class="rounded-md shadow-sm -space-y-px">
+        {% for field in form %}
+        <div class="mb-4">
+          <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+          {{ field|add_class:"appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" }}
+          {% if field.help_text %}
+          <p class="mt-2 text-sm text-gray-500">{{ field.help_text }}</p>
+          {% endif %}
+          {% for error in field.errors %}
+          <p class="text-red-500 text-xs italic">{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="flex items-center justify-between">
+        <button type="submit" name="add_another" value="true" class="group relative py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Add Another
+        </button>
+        <button type="submit" class="group relative py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+          Next
+        </button>
+      </div>
+    </form>
+    {% else %}
+    <p class="text-center text-sm text-gray-500">You have added the maximum number of contact persons.</p>
+    <div class="text-center mt-4">
+      <a href="{% url 'credit_card_view' %}" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-500 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+        Next
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

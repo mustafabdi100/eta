@@ -1,0 +1,130 @@
+
+/* Import Google font - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+#review-application * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+#review-application body {
+  display: flex;
+  padding: 10px;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: #E3F2FD;
+}
+
+#review-application .container {
+  max-width: 850px;
+  width: 100%;
+  padding: 30px 35px 35px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+#review-application .container h2 {
+  margin-top: -8px;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+#review-application .application-header {
+  display: flex;
+}
+
+#review-application .wrapper {
+  display: flex;
+  flex-direction: row;
+  margin: 20px 0;
+  min-height: 335px;
+}
+
+#review-application .wrapper .panel {
+  padding: 15px 20px;
+  flex: 1;
+  margin-right: 20px;
+}
+
+#review-application .wrapper .panel:last-child {
+  margin-right: 0;
+}
+
+#review-application .panel .title {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+#review-application .controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#review-application .controls button {
+  padding: 11px 20px;
+  font-size: 14px;
+  border-radius: 3px;
+  outline: none;
+  color: #fff;
+  cursor: pointer;
+  background: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+#review-application .controls .reset-filter {
+  color: #6C757D;
+  border: 1px solid #6C757D;
+}
+
+#review-application .controls .reset-filter:hover {
+  color: #fff;
+  background: #6C757D;
+}
+
+#review-application .controls .deleting-btn {
+  background: #a72b02eb;
+  border: 1px solid #6C757D;
+}
+
+#review-application .controls .approving-btn {
+  margin-left: 5px;
+  background: #067724ce;
+  border: 1px solid #53f063b8;
+}
+
+@media (max-width: 768px) {
+  #review-application .wrapper {
+    flex-direction: column;
+  }
+
+  #review-application .wrapper .panel {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  #review-application .controls {
+    justify-content: center;
+  }
+
+  #review-application .controls button {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  #review-application body {
+    padding: 5px;
+  }
+
+  #review-application .container {
+    padding: 15px;
+  }
+}

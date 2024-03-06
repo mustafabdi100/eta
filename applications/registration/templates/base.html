@@ -1,0 +1,25 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent approval</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/output.css' %}" type="text/css">
+
+  
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        {% block content %}
+        <!-- Your page content will go here -->
+        {% endblock %}
+    </div>
+</body>
+
+</html>

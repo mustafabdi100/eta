@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Open Sans', sans-serif;
+    }
+    .stat-card {
+        background: #202837;
+        border-radius: 20px;
+    }
+    .stat-heading {
+        color: #64748b;
+    }
+    .stat-value {
+        color: #fff;
+    }
+    .stat-icon {
+        color: #4f46e5;
+    }
+</style>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Applications -->
+    <div class="stat-card p-6">
+        <div class="flex items-center">
+            <div class="stat-icon text-3xl">
+                <i class="fas fa-file-alt"></i> 
+            </div>
+            <div class="ml-4">
+                <div class="text-xs stat-heading">Total Applications</div>
+                <div class="text-xl stat-value">{{ total_applications }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approved Applications -->
+    <a href="{% url 'approved_applications_view' %}" class="stat-card p-6 block">
+        <div class="flex items-center">
+            <div class="stat-icon text-3xl">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="ml-4">
+                <div class="text-xs stat-heading">Approved</div>
+                <div class="text-xl stat-value">{{ approved_applications }}</div>
+            </div>
+        </div>
+    </a>
+
+    <!-- Pending Applications -->
+    <a href="{% url 'pending_applications_view' %}" class="stat-card p-6 block">
+        <div class="flex items-center">
+            <div class="stat-icon text-3xl">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="ml-4">
+                <div class="text-xs stat-heading">Pending</div>
+                <div class="text-xl stat-value">{{ pending_applications }}</div>
+            </div>
+        </div>
+    </a>
+
+    <!-- Rejected Applications -->
+    <a href="{% url 'rejected_applications_view' %}" class="stat-card p-6 block">
+        <div class="flex items-center">
+            <div class="stat-icon text-3xl">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="ml-4">
+                <div class="text-xs stat-heading">Rejected</div>
+                <div class="text-xl stat-value">{{ rejected_applications }}</div>
+            </div>
+        </div>
+    </a>
+</div>
+
+
+<div class="flex flex-col mt-8">
+    <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-800">
+            <table class="min-w-full">
+                <thead class="bg-gray-800">
+                    <tr>
+                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Business Name</th>
+                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Ref No</th>
+                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Phone No</th>
+                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-800">
+                    {% for application in all_applications %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.business_name }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-blue-500">{{ application.reference_number }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.email_address }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.phone_number }}</td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if application.status == 'Approved' %}bg-green-500 text-gray-900{% elif application.status == 'Pending' %}bg-yellow-400 text-gray-900{% elif application.status == 'Rejected' %}bg-red-600 text-white{% endif %}">
+                                {{ application.status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800">
+                            <a href="{% url 'application_review_view' application.id %}" class="text-xs leading-4 font-medium rounded px-3 py-1 bg-blue-600 hover:bg-blue-700 transition ease-in-out duration-150">Review</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
