@@ -1,48 +1,253 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div class="container disable" id="review-application">
-    <div class="application-header">
-        <h2>Review Your Application</h2>
+<style>
+    .review-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #f7fafc;
+    }
+
+    .review-header {
+        margin-bottom: 2rem;
+    }
+
+    .review-header h1 {
+        font-size: 2rem;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #4a5568;
+        min-width: 240px;
+    }
+
+    .detail-value {
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .buttons button, 
+    .buttons a {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        text-decoration: none; /* Add this line to remove underline from the link */
+    }
+    
+    .buttons a {
+        background-color: #718096; /* Change the background color for the previous button */
+        color: white; /* Change the text color for the previous button */
+    }
+    
+    .buttons button {
+        background-color: #48bb78; /* Dark green color for the submit button */
+        color: white;
+    }
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .back-link button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.25rem;
+        background-color: #3182ce;
+        color: white;
+        cursor: pointer;
+    }
+
+    @media screen and (max-width: 768px) {
+        .review-container {
+            padding: 1rem;
+        }
+
+        .detail-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .detail-label {
+            min-width: unset;
+            margin-bottom: 0.5rem;
+        }
+    }
+    .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .popup-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        max-width: 400px;
+        text-align: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Adding a box shadow */
+    }
+    
+    
+
+    .close-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background-color: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+</style>
+
+<div class="review-container">
+    <div class="review-header">
+        <h1>Review Your Details</h1>
     </div>
-    <div class="wrapper">
-        <div class="panel">
-            <div class="Detail">
-                <h3>Business Details</h3>
-                <label class="title">Business Name: {{ business_details.business_name }}</label>
-                <label class="title">Registration Number: {{ business_details.registration_number }}</label>
-                <label class="title">KRA PIN: {{ business_details.kra_pin }}</label>
-                <label class="title">Business Address: {{ business_details.business_address }}</label>
-                <label class="title">City: {{ business_details.city }}</label>
-                <label class="title">Country: {{ business_details.country }}</label>
-                <label class="title">Phone Number: {{ business_details.phone_number }}</label>
-                <label class="title">Email Address: {{ business_details.email_address }}</label>
-            </div>
+
+    <!-- Business Details Section -->
+    <div class="card">
+        <div class="detail-item">
+            <p class="detail-label">Business Name:</p>
+            <p class="detail-value">{{ business_details.business_name }}</p>
         </div>
-        <div class="panel">
-            <div class="Detail">
-                <h3>Contact Persons</h3>
-                {% for contact in contact_persons %}
-                    <label class="title">Name: {{ contact.first_name }} {{ contact.last_name }}</label>
-                    <label class="title">Phone Number: {{ contact.mobile_number }}</label>
-                    <label class="title">Email Address: {{ contact.email_address }}</label>
-                {% endfor %}
-            </div>
+        <div class="detail-item">
+            <p class="detail-label">Registration Number:</p>
+            <p class="detail-value">{{ business_details.registration_number }}</p>
         </div>
-        <div class="panel">
-            <div class="Detail">
-                <h3>Credit Cards</h3>
-                {% for card in credit_cards %}
-                    <label class="title">Type: {{ card.card_type }}</label>
-                    <label class="title">Last 8 digits: XXXX XXXX {{ card.last_8_digits }}</label>
-                {% endfor %}
-            </div>
+        <div class="detail-item">
+            <p class="detail-label">KRA PIN:</p>
+            <p class="detail-value">{{ business_details.kra_pin }}</p>
+        </div>
+        <div class="detail-item">
+            <p class="detail-label">Business Address:</p>
+            <p class="detail-value">{{ business_details.business_address }}</p>
+        </div>
+        <div class="detail-item">
+            <p class="detail-label">City:</p>
+            <p class="detail-value">{{ business_details.city }}</p>
+        </div>
+        <div class="detail-item">
+            <p class="detail-label">Country:</p>
+            <p class="detail-value">{{ business_details.country }}</p>
+        </div>
+        <div class="detail-item">
+            <p class="detail-label">Phone Number:</p>
+            <p class="detail-value">{{ business_details.phone_number }}</p>
+        </div>
+        <div class="detail-item">
+            <p class="detail-label">Email Address:</p>
+            <p class="detail-value">{{ business_details.email_address }}</p>
         </div>
     </div>
-    <div class="controls">
-        <div class="row">
-            <button class="approving-btn" onclick="location.href='{% url 'final_submission_view' %}'">SUBMIT</button>
+
+    <!-- Contact Person Section -->
+    <div class="card">
+        <div class="detail-item">
+            <p class="detail-label">Name:</p>
+            <p class="detail-value">{{ contact_person.first_name }} {{ contact_person.last_name }}</p>
         </div>
+        <div class="detail-item">
+            <p class="detail-label">Phone Number:</p>
+            <p class="detail-value">{{ contact_person.mobile_number }}</p>
+        </div>
+        <div class="detail-item">
+            <p class="detail-label">Email Address:</p>
+            <p class="detail-value">{{ contact_person.email_address }}</p>
+        </div>
+    </div>
+
+    <!-- Credit Card Section -->
+    <div class="card">
+        <div class="detail-item">
+            <p class="detail-label">Type:</p>
+            <p class="detail-value">{{ credit_card.card_type }}</p>
+        </div>
+        <div class="detail-item">
+            <p class="detail-label">Last 8 digits:</p>
+            <p class="detail-value">XXXX XXXX {{ credit_card.last_8_digits }}</p>
+        </div>
+    </div>
+
+    
+<div class="buttons">
+    <a href="{% url 'credit_card_view' %}">Previous</a>
+    <button id="submitBtn">Submit</button>
+</div>
+
+<div id="popup" class="popup">
+    <div class="popup-content">
+        <button id="closeBtn" class="close-btn">&times;</button>
+        <h2 class="text-xl md:text-2xl font-semibold text-blue-800 mb-4">Submission Successful</h2>
+        <p class="text-md text-gray-700 mb-4">Your application has been submitted successfully. Your reference number is <strong id="refNumber" class="font-semibold text-blue-600"></strong>.</p>
+        <button id="closePopupBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Close</button>
     </div>
 </div>
+
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function() {
+        // Make an AJAX request to submit the application
+        fetch('{% url 'final_submission_view' %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Display the popup with the reference number
+            document.getElementById('refNumber').textContent = data.reference_number;
+            document.getElementById('popup').style.display = 'flex';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+ 
+    document.getElementById('closeBtn').addEventListener('click', closePopup);
+    document.getElementById('closePopupBtn').addEventListener('click', closePopup);
+ 
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+        window.location.href = '{% url 'home' %}';
+    }
+ </script>
 {% endblock %}

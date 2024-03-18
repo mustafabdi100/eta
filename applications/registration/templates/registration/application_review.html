@@ -1,84 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<style>
-    body {
-        background-color: #202837; 
-    }
-</style>
-<div class="max-w-6xl mx-auto px-4 py-5">
-    <div class="bg-[#202837] rounded-2xl p-6 my-5 shadow-lg">
-        <h2 class="text-2xl font-semibold mb-4 text-center text-gray-400">Review Application</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-200">
-            <div>
-                <p class="font-semibold text-sm mb-1">Business Name:</p>
-                <p class="mb-4">{{ application.business_name }}</p>
-
-                <p class="font-semibold text-sm mb-1">Reference Number:</p>
-                <p class="mb-4">{{ application.reference_number }}</p>
-
-                <p class="font-semibold text-sm mb-1">Registration Number:</p>
-                <p class="mb-4">{{ application.registration_number }}</p>
-
-                <p class="font-semibold text-sm mb-1">KRA PIN:</p>
-                <p class="mb-4">{{ application.kra_pin }}</p>
-
-                <p class="font-semibold text-sm mb-1">Business Address:</p>
-                <p class="mb-4">{{ application.business_address }}</p>
-
-                <p class="font-semibold text-sm mb-1">City:</p>
-                <p class="mb-4">{{ application.city }}</p>
-
-                <p class="font-semibold text-sm mb-1">Country:</p>
-                <p class="mb-4">{{ application.country }}</p>
-            </div>
-
-            <div>
-                <p class="font-semibold text-sm mb-1">Phone Number:</p>
-                <p class="mb-4">{{ application.phone_number }}</p>
-
-                <p class="font-semibold text-sm mb-1">Email Address:</p>
-                <p class="mb-4">{{ application.email_address }}</p>
-
-                <p class="font-semibold text-sm mb-1">Registration Certificate:</p>
-                <p class="mb-4">{{ application.registration_certificate }}</p>
-
-                <p class="font-semibold text-sm mb-1">Trading License:</p>
-                <p class="mb-4">{{ application.trading_license }}</p>
-
-                <p class="font-semibold text-sm mb-1">Tax Compliance Certificate:</p>
-                <p class="mb-4">{{ application.tax_compliance_certificate }}</p>
-            </div>
-        </div>
-
-        <h3 class="text-lg font-semibold mt-6 mb-4 text-gray-400">Contact Persons</h3>
-        <ul class="list-disc pl-6 text-gray-200">
-            {% for contact in application.contact_persons.all %}
-            <li class="mb-2">{{ contact.first_name }} {{ contact.last_name }} - {{ contact.mobile_number }} - {{ contact.email_address }}</li>
-            {% endfor %}
-        </ul>
-
-        <h3 class="text-lg font-semibold mt-6 mb-4 text-gray-400">Credit Cards</h3>
-        <ul class="list-disc pl-6 text-gray-200">
-            {% for card in application.credit_cards.all %}
-            <li class="mb-2">{{ card.card_type }} - XXXX XXXX XXXX {{ card.last_8_digits }}</li>
-            {% endfor %}
-        </ul>
-
-        {% if not is_rejected %}
-        <form method="post" class="mt-8 flex justify-center gap-4">
-            {% csrf_token %}
-            {% if application.status != 'approved' %}
-            <button type="submit" name="approve" value="true" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition ease-in-out duration-150">Approve</button>
-            {% endif %}
-            <button type="submit" name="reject" value="true" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition ease-in-out duration-150">Reject</button>
-        </form>
-        {% endif %}
-
-        <div class="mt-4 flex justify-center">
-            <a href="{% url 'dashboard_view' %}" class="bg-gray-700 text-gray-300 py-2 px-4 rounded hover:bg-gray-600 transition ease-in-out duration-150">Back to Dashboard</a>
-        </div>
-    </div>
+<style> .review-container { max-width: 800px; margin: 0 auto; padding: 2rem; background-color: #f7fafc; } .review-header { margin-bottom: 2rem; } .review-header h2 { font-size: 2rem; color: #2d3748; margin-bottom: 0.5rem; } .card { background: white; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); } .detail-item { display: flex; align-items: center; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 0.25rem; padding: 0.75rem; } .detail-label { font-weight: 600; color: #4a5568; min-width: 240px; } .detail-value { font-weight: 700; color: #2d3748; } .attachments { display: flex; flex-wrap: wrap; gap: 1rem; } .attachments img { width: 100px; height: auto; border-radius: 0.25rem; } .attachments a { display: inline-block; } .contact-list, .credit-card-list { padding-left: 0; list-style: none; } .contact-list li, .credit-card-list li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 0.25rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); } .buttons { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; margin-bottom: 2rem; } .buttons button { padding: 0.5rem 1rem; border: none; border-radius: 0.25rem; cursor: pointer; } .buttons button[name="approve"] { background-color: #38a169; color: white; } .buttons button[name="reject"] { background-color: #e53e3e; color: white; } .back-link { display: block; text-align: center; margin-top: 2rem; } .back-link button { padding: 0.5rem 1rem; border: none; border-radius: 0.25rem; background-color: #3182ce; color: white; cursor: pointer; } @media screen and (max-width: 768px) { .review-container { padding: 1rem; } .detail-item { flex-direction: column; align-items: flex-start; } .detail-label { min-width: unset; margin-bottom: 0.5rem; } .attachments { justify-content: center; } } </style> <div class="review-container"> <div class="review-header"> <h2>Review Application</h2> </div> <div class="card"> <div class="detail-item"> <p class="detail-label">Business Name:</p> <p class="detail-value">{{ application.business_name }}</p> </div> <div class="detail-item"> <p class="detail-label">Reference Number:</p> <p class="detail-value">{{ application.reference_number }}</p> </div> <div class="detail-item"> <p class="detail-label">Registration Number:</p> <p class="detail-value">{{ application.registration_number }}</p> </div> <div class="detail-item"> <p class="detail-label">KRA PIN:</p> <p class="detail-value">{{ application.kra_pin }}</p> </div> <div class="detail-item"> <p class="detail-label">Business Address:</p> <p class="detail-value">{{ application.business_address }}</p> </div> <div class="detail-item"> <p class="detail-label">City:</p> <p class="detail-value">{{ application.city }}</p> </div> <div class="detail-item"> <p class="detail-label">Country:</p> <p class="detail-value">{{ application.country }}</p> </div> <div class="detail-item"> <p class="detail-label">Phone Number:</p> <p class="detail-value">{{ application.phone_number }}</p> </div> <div class="detail-item"> <p class="detail-label">Email Address:</p> <p class="detail-value">{{ application.email_address }}</p> </div> <div class="attachments"> <div> <p class="detail-label">Registration Certificate:</p> {% if application.registration_certificate %} <a href="{{ application.registration_certificate.url }}" target="_blank"> <img src="{% static 'images/pdf-placeholder.png' %}" alt="Registration Certificate"> </a> {% else %} <p>No file uploaded</p> {% endif %} </div> <div> <p class="detail-label">Trading License:</p> {% if application.trading_license %} <a href="{{ application.trading_license.url }}" target="_blank"> <img src="{% static 'images/pdf-placeholder.png' %}" alt="Trading License"> </a> {% else %} <p>No file uploaded</p> {% endif %} </div> <div> <p class="detail-label">Tax Compliance Certificate:</p> {% if application.tax_compliance_certificate %} <a href="{{ application.tax_compliance_certificate.url }}" target="_blank"> <img src="{% static 'images/pdf-placeholder.png' %}" alt="Tax Compliance Certificate"> </a> {% else %} <p>No file uploaded</p> {% endif %} </div> </div> </div> <!-- Contact Persons Section --> <h3>Contact Persons</h3> <ul class="contact-list"> {% for contact in application.contact_persons.all %} <li> <div class="detail-item"> <p class="detail-label">First Name:</p> <p class="detail-value">{{ contact.first_name }}</p> </div> <div class="detail-item"> <p class="detail-label">Last Name:</p> <p class="detail-value">{{ contact.last_name }}</p> </div> <div class="detail-item"> <p class="detail-label">Mobile Number:</p> <p class="detail-value">{{ contact.mobile_number }}</p> </div> <div class="detail-item"> <p class="detail-label">Email Address:</p> <p class="detail-value">{{ contact.email_address }}</p> </div> </li> {% endfor %} </ul> <!-- Credit Cards Section --> <h3>Credit Cards</h3> <ul class="credit-card-list"> {% for card in application.credit_cards.all %} <li> <div class="detail-item"> <p class="detail-label">Card Type:</p> <p class="detail-value">{{ card.card_type }}</p> </div> <div class="detail-item"> <p class="detail-label">Last 8 Digits:</p> <p class="detail-value">XXXX XXXX XXXX {{ card.last_8_digits }}</p> </div> </li> {% endfor %} </ul> <!-- Action Buttons -->
+{% if not is_rejected %}
+<div class="buttons">
+<form method="post">
+{% csrf_token %}
+{% if application.status != 'approved' %}
+<button type="submit" name="approve" value="true">Approve</button>
+{% endif %}
+<button type="submit" name="reject" value="true">Reject</button>
+</form>
 </div>
+{% endif %}
+
+<div class="back-link"> <a href="{% url 'dashboard_view' %}"> <button>Back to Dashboard</button> </a> </div> </div>
 {% endblock %}

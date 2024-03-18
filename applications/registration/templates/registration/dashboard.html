@@ -2,115 +2,207 @@
 
 {% block content %}
 <style>
-    body {
-        font-family: 'Open Sans', sans-serif;
+    .stat-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     }
-    .stat-card {
-        background: #202837;
-        border-radius: 20px;
+
+    .stat-box-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #4b5563; /* Adjust based on your preference */
     }
-    .stat-heading {
-        color: #64748b;
+
+    .stat-box-number {
+        font-size: 1.25rem; /* 20px */
+        font-weight: 700;
+        color: #1f2937;
     }
-    .stat-value {
-        color: #fff;
-    }
+
     .stat-icon {
-        color: #4f46e5;
+        font-size: 1.5rem; /* Adjust icon size as needed */
     }
+
+    /* Add more customization here if needed */
 </style>
-<body class="bg-gray-900 text-white">
-    <div class="container mx-auto px-4">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- Total Applications -->
-    <div class="stat-card p-6">
-        <div class="flex items-center">
-            <div class="stat-icon text-3xl">
-                <i class="fas fa-file-alt"></i> 
+
+<body>
+    <div class="px-4 py-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <!-- Total Applications -->
+            <div class="stat-box" style="background-color: #eff6ff;">
+                <div>
+                    <div class="stat-box-title">Total Applications</div>
+                    <div class="stat-box-number">{{ total_applications }}</div>
+                </div>
+                <i class="fas fa-th-list stat-icon text-blue-500"></i>
             </div>
-            <div class="ml-4">
-                <div class="text-xs stat-heading">Total Applications</div>
-                <div class="text-xl stat-value">{{ total_applications }}</div>
-            </div>
+
+            <!-- Approved Applications -->
+            <a href="{% url 'approved_applications_view' %}" class="stat-box" style="background-color: #ecfdf5;">
+                <div>
+                    <div class="stat-box-title">Approved</div>
+                    <div class="stat-box-number">{{ approved_applications }}</div>
+                </div>
+                <i class="fas fa-check-circle stat-icon text-green-500"></i>
+            </a>
+
+            <!-- Pending Applications -->
+            <a href="{% url 'pending_applications_view' %}" class="stat-box" style="background-color: #fffbeb;">
+                <div>
+                    <div class="stat-box-title">Pending</div>
+                    <div class="stat-box-number">{{ pending_applications }}</div>
+                </div>
+                <i class="fas fa-pause-circle stat-icon text-orange-500"></i>
+            </a>
+
+            <!-- Rejected Applications -->
+            <a href="{% url 'rejected_applications_view' %}" class="stat-box" style="background-color: #fef2f2;">
+                <div>
+                    <div class="stat-box-title">Rejected</div>
+                    <div class="stat-box-number">{{ rejected_applications }}</div>
+                </div>
+                <i class="fas fa-times-circle stat-icon text-red-500"></i>
+            </a>
         </div>
     </div>
 
-    <!-- Approved Applications -->
-    <a href="{% url 'approved_applications_view' %}" class="stat-card p-6 block">
-        <div class="flex items-center">
-            <div class="stat-icon text-3xl">
-                <i class="fas fa-check-circle"></i>
+    <div class="container mx-auto px-4 sm:px-8 py-4">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="px-4 py-5 sm:px-6 border-b w-full">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    All applications
+                </h3>
             </div>
-            <div class="ml-4">
-                <div class="text-xs stat-heading">Approved</div>
-                <div class="text-xl stat-value">{{ approved_applications }}</div>
+            <div class="px-5 mt-3">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Business Name
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Ref No
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Email
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Phone No
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        {% for application in page_obj.object_list %}
+                        <tr>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">{{ application.business_name }}</p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">{{ application.reference_number }}</p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">{{ application.email_address }}</p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <p class="text-gray-900 whitespace-no-wrap">{{ application.phone_number }}</p>
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <span class="relative inline-block px-3 py-1 font-semibold leading-tight">
+                                    <span aria-hidden="true" class="absolute inset-0 opacity-50 rounded-full"></span>
+                                    <span class="relative">
+                                        {% if application.status == 'Approved' %}
+                                        <span class="bg-green-200 text-green-600">Approved</span>
+                                        {% elif application.status == 'Pending' %}
+                                        <span class="bg-yellow-200 text-yellow-600">Pending</span>
+                                        {% elif application.status == 'Rejected' %}
+                                        <span class="bg-red-200 text-red-600">Rejected</span>
+                                        {% else %}
+                                        <span class="bg-gray-200 text-gray-600">{{ application.status }}</span>
+                                        {% endif %}
+                                    </span>
+                                </span>
+                            </td>
+                            
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-right">
+                                <a href="{% url 'application_review_view' application.id %}" class="text-blue-500 hover:text-blue-700">Review</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </a>
-
-    <!-- Pending Applications -->
-    <a href="{% url 'pending_applications_view' %}" class="stat-card p-6 block">
-        <div class="flex items-center">
-            <div class="stat-icon text-3xl">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div class="ml-4">
-                <div class="text-xs stat-heading">Pending</div>
-                <div class="text-xl stat-value">{{ pending_applications }}</div>
-            </div>
-        </div>
-    </a>
-
-    <!-- Rejected Applications -->
-    <a href="{% url 'rejected_applications_view' %}" class="stat-card p-6 block">
-        <div class="flex items-center">
-            <div class="stat-icon text-3xl">
-                <i class="fas fa-times-circle"></i>
-            </div>
-            <div class="ml-4">
-                <div class="text-xs stat-heading">Rejected</div>
-                <div class="text-xl stat-value">{{ rejected_applications }}</div>
-            </div>
-        </div>
-    </a>
-</div>
-
-
-<div class="flex flex-col mt-8">
-    <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-800">
-            <table class="min-w-full">
-                <thead class="bg-gray-800">
-                    <tr>
-                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Business Name</th>
-                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Ref No</th>
-                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Phone No</th>
-                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 border-b border-gray-800 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-gray-800">
-                    {% for application in all_applications %}
-                    <tr>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.business_name }}</td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-blue-500">{{ application.reference_number }}</td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.email_address }}</td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800 text-sm leading-5 text-gray-300">{{ application.phone_number }}</td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if application.status == 'Approved' %}bg-green-500 text-gray-900{% elif application.status == 'Pending' %}bg-yellow-400 text-gray-900{% elif application.status == 'Rejected' %}bg-red-600 text-white{% endif %}">
-                                {{ application.status }}
+            <div class="bg-gray-100 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                <div class="flex-1 flex justify-between sm:hidden">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing
+                            <span class="font-medium">{{ page_obj.start_index }}</span>
+                            to
+                            <span class="font-medium">{{ page_obj.end_index }}</span>
+                            of
+                            <span class="font-medium">{{ page_obj.paginator.count }}</span>
+                            results
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Previous</span>
+                                <!-- Hero Icon Chevron Left -->
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                            {% endif %}
+                            {% for page_number in page_obj.paginator.page_range %}
+                            {% if page_number == page_obj.number %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600 hover:bg-blue-100">
+                                {{ page_number }}
                             </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-800">
-                            <a href="{% url 'application_review_view' application.id %}" class="text-xs leading-4 font-medium rounded px-3 py-1 bg-blue-600 hover:bg-blue-700 transition ease-in-out duration-150">Review</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            {% else %}
+                            <a href="?page={{ page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ page_number }}
+                            </a>
+                            {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Next</span>
+                                <!-- Hero Icon Chevron Right -->
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-
 {% endblock %}

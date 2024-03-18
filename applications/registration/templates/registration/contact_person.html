@@ -1,52 +1,99 @@
 {% extends 'base.html' %}
-{% load form_tags %}  <!-- Make sure you have created and loaded the custom template tag as explained previously -->
 {% block content %}
-{%load static%}
-<div class="flex items-center justify-center min-h-screen bg-gray-50">
-  <div class="max-w-md w-full space-y-8 p-10 rounded-md shadow-lg bg-white">
-    <div class="text-center">
-      <h2 class="text-lg font-semibold text-gray-900">
-        Agencies applying for eTA must seek approval first by applying through the form below
-      </h2>
-      <img src="{% static 'images/logo.png' %}" alt="Logo" class="mx-auto mt-4" style="max-width: 100px;">
-      <h4 class="text-lg font-semibold text-gray-600">
-        Contact Details
-      </h4>
-    </div>
-    {% if can_add_more %}
-    <form class="mt-8 space-y-6" method="post">
-      {% csrf_token %}
-      <div class="rounded-md shadow-sm -space-y-px">
-        {% for field in form %}
-        <div class="mb-4">
-          <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
-          {{ field|add_class:"appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" }}
-          {% if field.help_text %}
-          <p class="mt-2 text-sm text-gray-500">{{ field.help_text }}</p>
-          {% endif %}
-          {% for error in field.errors %}
-          <p class="text-red-500 text-xs italic">{{ error }}</p>
-          {% endfor %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Person Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.8rem;
+        }
+        .form-input, select, input[type="tel"], input[type="email"], input[type="text"], button {
+            transition: border 0.3s ease;
+            font-size: 0.8rem;
+            padding: 0.64rem 0.8rem;
+        }
+        .form-input:focus, select:focus, input[type="tel"]:focus, input[type="email"]:focus, input[type="text"]:focus {
+            border-color: #68D391;
+            box-shadow: none;
+        }
+        .mb-4 {
+            margin-bottom: 0.8rem;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        .border-2 {
+            border-width: 2px;
+        }
+        .text-red-500 {
+            color: #f87171;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="container mx-auto px-4 py-8">
+        <img src="{% static 'images/logo.png' %}" alt="Logo" class="mx-auto mt-4" style="max-width: 100px;">
+        <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+            <form method="post">
+                {% csrf_token %}
+                <fieldset class="mb-6 p-4 border-l-4 border-green-500">
+                    <legend class="text-xl font-semibold mb-4 text-green-800">Contact Details</legend>
+
+                    <!-- First Name -->
+                    <div class="mb-4">
+                        <label for="id_first_name" class="block text-sm font-medium text-gray-700">First Name:</label>
+                        <input type="text" name="first_name" id="id_first_name" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg" placeholder="Enter first name" value="{{ form.first_name.value|default_if_none:'' }}">
+                        {% if form.first_name.errors %}
+                            <p class="text-red-500 text-xs">{{ form.first_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="mb-4">
+                        <label for="id_last_name" class="block text-sm font-medium text-gray-700">Last Name:</label>
+                        <input type="text" name="last_name" id="id_last_name" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg" placeholder="Enter last name" value="{{ form.last_name.value|default_if_none:'' }}">
+                        {% if form.last_name.errors %}
+                            <p class="text-red-500 text-xs">{{ form.last_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div class="mb-4">
+                        <label for="id_mobile_number" class="block text-sm font-medium text-gray-700">Mobile Number:</label>
+                        <input type="tel" name="mobile_number" id="id_mobile_number" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg" placeholder="Enter mobile number" value="{{ form.mobile_number.value|default_if_none:'' }}">
+                        {% if form.mobile_number.errors %}
+                            <p class="text-red-500 text-xs">{{ form.mobile_number.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="mb-4">
+                        <label for="id_email_address" class="block text-sm font-medium text-gray-700">Email Address:</label>
+                        <input type="email" name="email_address" id="id_email_address" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg" placeholder="Enter email address" value="{{ form.email_address.value|default_if_none:'' }}">
+                        {% if form.email_address.errors %}
+                            <p class="text-red-500 text-xs">{{ form.email_address.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex justify-between mt-6">
+                        <a href="{% url 'business_detail_view' %}" class="py-2 px-6 border-2 border-green-600 text-green-600 font-semibold rounded-lg hover:bg-green-50">Previous</a>
+                        <button type="submit" class="py-2 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700">Next</button>
+                    </div>
+                </fieldset>
+            </form>
         </div>
-        {% endfor %}
-      </div>
-      <div class="flex items-center justify-between">
-        <button type="submit" name="add_another" value="true" class="group relative py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          Add Another
-        </button>
-        <button type="submit" class="group relative py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-          Next
-        </button>
-      </div>
-    </form>
-    {% else %}
-    <p class="text-center text-sm text-gray-500">You have added the maximum number of contact persons.</p>
-    <div class="text-center mt-4">
-      <a href="{% url 'credit_card_view' %}" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-500 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-        Next
-      </a>
     </div>
-    {% endif %}
-  </div>
-</div>
+</body>
+</html>
 {% endblock %}

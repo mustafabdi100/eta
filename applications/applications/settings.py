@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'registration',
       'storages',
+      
+      
 ]
 
 MIDDLEWARE = [
@@ -110,6 +112,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL ='static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 
 
 # Default primary key field type
@@ -123,5 +129,9 @@ LOGIN_URL = '/login/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+SESSION_COOKIE_AGE = 1800  # 30 minutes
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True
 
 

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto my-8">
+    <h1 class="text-2xl font-bold mb-4">Search Application Status</h1>
+    <form id="search-form" method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="businessName" class="text-lg font-medium">Business Name</label>
+            <input type="text" id="businessName" name="business_name" class="input-field mt-1 block w-full border-gray-300 rounded-md" placeholder="Enter Business Name">
+        </div>
+        <div>
+            <label for="referenceNumber" class="text-lg font-medium">Reference Number</label>
+            <input type="text" id="referenceNumber" name="reference_number" class="input-field mt-1 block w-full border-gray-300 rounded-md" placeholder="Enter Reference Number">
+        </div>
+        <div class="flex justify-end space-x-4">
+            <button type="submit" class="px-4 py-2 bg-green-700 text-white font-bold rounded-lg hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-opacity-50">
+                Search
+            </button>
+        </div>
+    </form>
+    <div id="status-popup"></div>
+</div>
+{% endblock %}

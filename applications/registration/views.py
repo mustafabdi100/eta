@@ -11,85 +11,92 @@ from django.core.files import File
 from .utils import ensure_tmp_directory_exists
 from django.conf import settings
 import os
+from django.db.models import Q
+from .decorators import form_step_required
+from django.core.paginator import Paginator
+
+import json
+from django.http import JsonResponse
+
+def get_cities(request, country):
+    with open('data.json', encoding='utf-8') as file:
+        data = json.load(file)
+        selected_country = next(c for c in data if c['country'] == country)
+        cities = selected_country['city']
+        return JsonResponse(cities, safe=False)
+
+def home(request):
+    return render(request, 'registration/home.html')
 
 
 def business_detail_view(request):
+    initial_data = request.session.get('business_details', {})
     if request.method == 'POST':
         form = BusinessDetailForm(request.POST, request.FILES)
         if form.is_valid():
-            # Call the utility function to ensure the tmp directory exists
             ensure_tmp_directory_exists()
-
-            # Handle non-file fields
             business_data = form.cleaned_data.copy()
-            # Temporarily store file uploads and update business_data with file paths
+
+            # Concatenate phone code and phone number
+            phone_code = business_data.get('phone_code')
+            phone_number = business_data.get('phone_number')
+            if phone_code and phone_number:
+                business_data['phone_number'] = f"{phone_code}{phone_number}"
+
             for file_field in ['registration_certificate', 'trading_license', 'tax_compliance_certificate']:
                 if file_field in request.FILES:
                     file = request.FILES[file_field]
-                    # Generate a unique filename to avoid overwrite
                     unique_filename = f"{file_field}_{request.session.session_key}_{file.name}"
-                    # Save file temporarily
                     path = default_storage.save('tmp/' + unique_filename, ContentFile(file.read()))
-                    # Store file path in business_data
                     business_data[file_field] = path
 
-            # Store business details in session
             request.session['business_details'] = business_data
-
-            # Redirect to the next step
-            return redirect('contact_person_view')  # Make sure this is the correct URL name for the next step
+            return redirect('contact_person_view')
     else:
-        form = BusinessDetailForm()
+        form = BusinessDetailForm(initial=initial_data)
+
     return render(request, 'registration/business_detail.html', {'form': form})
 
+@form_step_required('business_details', 'business_detail_view')
+
 def contact_person_view(request):
-    if 'contact_persons' not in request.session:
-        request.session['contact_persons'] = []
+    # Get the existing contact person data from the session
+    existing_contact_person = request.session.get('contact_person', {})
 
     if request.method == 'POST':
         form = ContactPersonForm(request.POST)
         if form.is_valid():
             contact_person_data = form.cleaned_data
-            request.session['contact_persons'].append(contact_person_data)
+            request.session['contact_person'] = contact_person_data
             request.session.modified = True  # Ensure the session is saved
-            
-            if 'add_another' in request.POST:
-                form = ContactPersonForm()  # Reinitialize the form for a fresh entry
-            else:
-                # If done adding contact persons, proceed to the next step
-                return redirect('credit_card_view')
+            return redirect('credit_card_view')
     else:
-        form = ContactPersonForm()  # Initialize an empty form for GET requests
-    
+        # If GET request or form is invalid, initialize the form with existing data
+        form = ContactPersonForm(initial=existing_contact_person)
+
     context = {
         'form': form,
-        'can_add_more': len(request.session.get('contact_persons', [])) < 3,
-        'contact_persons': request.session.get('contact_persons', [])  # Optional: Display already added contacts
     }
     return render(request, 'registration/contact_person.html', context)
 
-
+@form_step_required('contact_person', 'contact_person_view')
 def credit_card_view(request):
-    if 'credit_cards' not in request.session:
-        request.session['credit_cards'] = []
+    # Get the existing credit card data from the session
+    existing_credit_card = request.session.get('credit_card', {})
 
-    form = CreditCardForm()  # Initialize an empty form for both GET and POST requests
     if request.method == 'POST':
         form = CreditCardForm(request.POST)
         if form.is_valid():
             credit_card_data = form.cleaned_data
-            request.session['credit_cards'].append(credit_card_data)
-            request.session.modified = True  # Ensure the session data is updated
-            
-            if 'add_another' in request.POST:
-                return redirect('credit_card_view')  # Redirect back to allow adding another credit card
-            else:
-                return redirect('review_application')  # Proceed to the review application step if "Review" is clicked
-    
+            request.session['credit_card'] = credit_card_data
+            request.session.modified = True  # Ensure the session is saved
+            return redirect('review_application')
+    else:
+        # If GET request or form is invalid, initialize the form with existing data
+        form = CreditCardForm(initial=existing_credit_card)
+
     context = {
         'form': form,
-        'can_add_more': len(request.session.get('credit_cards', [])) < 3,
-        'credit_cards': request.session.get('credit_cards', [])  # Optionally display already added cards
     }
     return render(request, 'registration/credit_card.html', context)
 
@@ -98,18 +105,17 @@ def credit_card_view(request):
 def review_application(request):
     # Fetch data from session
     business_details = request.session.get('business_details', {})
-    contact_persons = request.session.get('contact_persons', [])
-    credit_cards = request.session.get('credit_cards', [])
+    contact_person = request.session.get('contact_person', {})
+    credit_card = request.session.get('credit_card', {})
 
     # Context to display the data for review
     context = {
         'business_details': business_details,
-        'contact_persons': contact_persons,
-        'credit_cards': credit_cards
+        'contact_person': contact_person,
+        'credit_card': credit_card,
     }
 
     return render(request, 'registration/review_application.html', context)
-
 
 def generate_unique_reference():
     while True:
@@ -118,57 +124,52 @@ def generate_unique_reference():
             return reference
 
 def final_submission_view(request):
-    # Ensure there's data to submit
-    if 'business_details' in request.session and 'contact_persons' in request.session and 'credit_cards' in request.session:
-        # Retrieve data from session
-        business_details_data = request.session.pop('business_details')
-        contact_persons_data = request.session.pop('contact_persons')
-        credit_cards_data = request.session.pop('credit_cards')
+    if request.method == 'POST':
+        # Ensure there's data to submit
+        if 'business_details' in request.session and 'contact_person' in request.session and 'credit_card' in request.session:
+            # Retrieve data from session
+            business_details_data = request.session.pop('business_details')
+            contact_person_data = request.session.pop('contact_person')
+            credit_card_data = request.session.pop('credit_card')
 
-        # Generate a unique reference number
-        reference_number = generate_unique_reference()
-        business_details_data['reference_number'] = reference_number
+            # Generate a unique reference number
+            reference_number = generate_unique_reference()
+            business_details_data['reference_number'] = reference_number
 
-        # Exclude file fields from initial creation to avoid issues with unsaved model instance
-        file_fields = ['registration_certificate', 'trading_license', 'tax_compliance_certificate']
-        file_data = {field: business_details_data.pop(field) for field in file_fields if field in business_details_data}
+            # Exclude file fields from initial creation to avoid issues with unsaved model instance
+            file_fields = ['registration_certificate', 'trading_license', 'tax_compliance_certificate']
+            file_data = {field: business_details_data.pop(field) for field in file_fields if field in business_details_data}
 
-        # Create the BusinessDetail instance without file fields
-        business_detail = BusinessDetail.objects.create(**business_details_data)
+            # Create the BusinessDetail instance without file fields
+            business_detail = BusinessDetail.objects.create(**business_details_data)
 
-        # Handle file uploads
-        for file_field, temp_file_path in file_data.items():
-            if temp_file_path:
-                # Use Django's default storage API to open the file. This works with S3 if configured.
-                with default_storage.open(temp_file_path, 'rb') as file:
-                    # Save the file to the model
-                    getattr(business_detail, file_field).save(os.path.basename(temp_file_path), File(file), save=True)
+            # Handle file uploads
+            for file_field, temp_file_path in file_data.items():
+                if temp_file_path:
+                    # Use Django's default storage API to open the file. This works with S3 if configured.
+                    with default_storage.open(temp_file_path, 'rb') as file:
+                        # Save the file to the model
+                        getattr(business_detail, file_field).save(os.path.basename(temp_file_path), File(file), save=True)
 
-        # Create ContactPerson instances
-        for cp_data in contact_persons_data:
-            ContactPerson.objects.create(business=business_detail, **cp_data)
+            # Create ContactPerson instance
+            ContactPerson.objects.create(business=business_detail, **contact_person_data)
 
-        # Create CreditCard instances
-        for cc_data in credit_cards_data:
-            CreditCard.objects.create(business=business_detail, **cc_data)
+            # Create CreditCard instance
+            CreditCard.objects.create(business=business_detail, **credit_card_data)
 
-        # Clear session data for contact persons and credit cards to prevent re-use
-        if 'contact_persons' in request.session:
-            del request.session['contact_persons']
-        if 'credit_cards' in request.session:
-            del request.session['credit_cards']
+            # Clear session data for contact person and credit card to prevent re-use
+            if 'contact_person' in request.session:
+                del request.session['contact_person']
+            if 'credit_card' in request.session:
+                del request.session['credit_card']
 
-        # Redirect to a success page with the reference number
-        return redirect('submission_success', reference_number=reference_number)
-        
+            # Return the reference number as a JSON response
+            return JsonResponse({'reference_number': reference_number})
 
     # If there's no data in the session (e.g., direct access), redirect to the start of the form process
     return redirect('business_detail_view')
 
 
-def submission_success_view(request, reference_number):
-    context = {'reference_number': reference_number}
-    return render(request, 'registration/submission_success.html', context)
 
 @login_required
 def dashboard_view(request):
@@ -177,29 +178,62 @@ def dashboard_view(request):
     approved_applications = BusinessDetail.objects.filter(status='approved').count()
     rejected_applications = BusinessDetail.objects.filter(status='rejected').count()
     all_applications = BusinessDetail.objects.all()
+
+    # Pagination
+    paginator = Paginator(all_applications, 10)  # Show 10 applications per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
         'total_applications': total_applications,
         'pending_applications': pending_applications,
         'approved_applications': approved_applications,
         'rejected_applications': rejected_applications,
-        'all_applications': all_applications,
+        'page_obj': page_obj,  # Pass the paginated data
     }
     return render(request, 'registration/dashboard.html', context)
 
 @login_required
 def pending_applications_view(request):
     pending_applications = BusinessDetail.objects.filter(status='pending')
-    return render(request, 'registration/pending_applications.html', {'pending_applications': pending_applications})
+
+    # Pagination
+    paginator = Paginator(pending_applications, 10)  # Show 10 applications per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,  # Pass the paginated data
+    }
+    return render(request, 'registration/pending_applications.html', context)
 
 @login_required
 def approved_applications_view(request):
     approved_applications = BusinessDetail.objects.filter(status='approved')
-    return render(request, 'registration/approved_applications.html', {'approved_applications': approved_applications})
+    
+    # Pagination
+    paginator = Paginator(approved_applications, 10)  # Show 10 applications per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,  # Pass the paginated data
+    }
+    return render(request, 'registration/approved_applications.html', context)
 
 @login_required
 def rejected_applications_view(request):
     rejected_applications = BusinessDetail.objects.filter(status='rejected')
-    return render(request, 'registration/rejected_applications.html', {'rejected_applications': rejected_applications})
+
+    # Pagination
+    paginator = Paginator(rejected_applications, 10)  # Show 10 applications per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,  # Pass the paginated data
+    }
+    return render(request, 'registration/rejected_applications.html', context)
 
 @login_required
 def application_review_view(request, application_id):
@@ -240,3 +274,33 @@ def reject_application(request, application_id):
 def view_activity_logs(request):
     logs = ActivityLog.objects.all().order_by('-timestamp')
     return render(request, 'registration/view_activity_logs.html', {'logs': logs})
+
+def search_application_status(request):
+    if request.method == 'POST':
+        business_name = request.POST.get('business_name', '').strip()
+        reference_number = request.POST.get('reference_number', '').strip()
+
+        # Check if either business_name or reference_number is provided
+        if business_name or reference_number:
+            query = Q()
+
+            # If reference_number is provided, search by reference_number (case-insensitive)
+            if reference_number:
+                query |= Q(reference_number__iexact=reference_number)
+
+            # If business_name is provided, search by business_name (case-insensitive exact match)
+            if business_name:
+                query |= Q(business_name__iexact=business_name)
+
+            applications = BusinessDetail.objects.filter(query)
+            if applications:
+                application_data = []
+                for application in applications:
+                    application_data.append({
+                        'status': application.status,
+                    })
+                return JsonResponse({'applications': application_data})
+            else:
+                return JsonResponse({'error_message': 'No application found with the provided details.'})
+
+    return JsonResponse({'error_message': 'Invalid request method.'})

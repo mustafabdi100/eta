@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from .validators import validate_file_extension
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -17,10 +19,11 @@ class BusinessDetail(models.Model):
     city = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=20)
+    phone_code = models.CharField(max_length=10,null=True)
     email_address = models.EmailField()
-    registration_certificate = models.FileField(upload_to='documents/')
-    trading_license = models.FileField(upload_to='documents/')
-    tax_compliance_certificate = models.FileField(upload_to='documents/')
+    registration_certificate = models.FileField(upload_to='documents/', validators=[validate_file_extension])
+    trading_license = models.FileField(upload_to='documents/', validators=[validate_file_extension])
+    tax_compliance_certificate = models.FileField(upload_to='documents/', validators=[validate_file_extension])
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('approved', 'Approved'),

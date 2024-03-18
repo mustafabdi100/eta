@@ -1,130 +1,114 @@
-
-/* Import Google font - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
-#review-application * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
 }
 
-#review-application body {
-  display: flex;
-  padding: 10px;
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  background: #E3F2FD;
+.hero-background {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-#review-application .container {
-  max-width: 850px;
+.nav-bg {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 30px 35px 35px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none; /* Changed to 'none' to be overridden by modal-active */
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+
+.overlay:target {
+  visibility: visible;
+  opacity: 1;
+}
+
+.popup {
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 700px;
+  position: relative;
+  overflow: hidden;
 }
 
-#review-application .container h2 {
-  margin-top: -8px;
-  font-size: 22px;
-  font-weight: 500;
+.popup .close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  text-decoration: none;
+  color: #333;
 }
 
-#review-application .application-header {
-  display: flex;
+.popup .content .overflow-auto {
+  max-height: 400px;
+  overflow-y: auto;
 }
 
-#review-application .wrapper {
-  display: flex;
-  flex-direction: row;
-  margin: 20px 0;
-  min-height: 335px;
-}
-
-#review-application .wrapper .panel {
-  padding: 15px 20px;
-  flex: 1;
-  margin-right: 20px;
-}
-
-#review-application .wrapper .panel:last-child {
-  margin-right: 0;
-}
-
-#review-application .panel .title {
-  display: block;
-  font-size: 14px;
-  margin-bottom: 12px;
-  font-weight: bold;
-}
-
-#review-application .controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-#review-application .controls button {
-  padding: 11px 20px;
-  font-size: 14px;
-  border-radius: 3px;
-  outline: none;
-  color: #fff;
-  cursor: pointer;
-  background: none;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-}
-
-#review-application .controls .reset-filter {
-  color: #6C757D;
-  border: 1px solid #6C757D;
-}
-
-#review-application .controls .reset-filter:hover {
-  color: #fff;
-  background: #6C757D;
-}
-
-#review-application .controls .deleting-btn {
-  background: #a72b02eb;
-  border: 1px solid #6C757D;
-}
-
-#review-application .controls .approving-btn {
-  margin-left: 5px;
-  background: #067724ce;
-  border: 1px solid #53f063b8;
-}
-
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  #review-application .wrapper {
-    flex-direction: column;
+  .hero-background {
+      padding-top: 120px; /* Adjust the padding to accommodate the fixed navbar */
   }
-
-  #review-application .wrapper .panel {
-    width: 100%;
-    margin-right: 0;
-  }
-
-  #review-application .controls {
-    justify-content: center;
-  }
-
-  #review-application .controls button {
-    margin-top: 10px;
+  .grid {
+      grid-template-columns: repeat(1, minmax(0, 1fr)); /* Make the grid layout single column on smaller screens */
   }
 }
 
-@media (max-width: 480px) {
-  #review-application body {
-    padding: 5px;
-  }
-
-  #review-application .container {
-    padding: 15px;
-  }
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  background-color: transparent;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid transparent;
 }
+
+.btn-green {
+  background-color: #22543d; /* Using a dark green color */
+  color: white;
+}
+
+.btn-close {
+  color: #22543d; /* Using a dark green color */
+  box-shadow: 0 2px 5px 0 rgba(34, 84, 61, 0.3); /* Dark green box shadow */
+}
+
+.input-field {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.close-modal {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #22543d; /* Using a dark green color */
+  transition: color 0.2s;
+}
+
+.close-modal:hover,
+.btn-close:hover {
+  color: #1c4532; /* A slightly darker green for hover state */
+  text-decoration: none;
+}
+
+/* Updated to control visibility and display of the overlay */
+.modal-active {
+  display: flex; /* This will now apply to the overlay */
+  visibility: visible; /* Make the overlay visible */
+  opacity: 1; /* Fully opaque */
+}
+
