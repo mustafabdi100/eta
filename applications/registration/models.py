@@ -24,6 +24,7 @@ class BusinessDetail(models.Model):
     registration_certificate = models.FileField(upload_to='documents/', validators=[validate_file_extension])
     trading_license = models.FileField(upload_to='documents/', validators=[validate_file_extension])
     tax_compliance_certificate = models.FileField(upload_to='documents/', validators=[validate_file_extension])
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('approved', 'Approved'),

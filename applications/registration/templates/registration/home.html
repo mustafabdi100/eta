@@ -1,161 +1,160 @@
-{%load static%}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>homepage</title>
+    <title>Homepage</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body class="bg-gray-100">
     <nav class="nav-bg fixed w-full z-10 top-0 shadow-md">
-      <div class="px-5 py-2 flex items-center">
-        <img src="{% static 'images/logo.png' %}" alt="Logo" class="mr-3 h-12">
-        <div>
-          <h1 class="text-lg md:text-xl font-semibold text-green-600">Electronic Travel Authorisation (eTA) Agencies Approval Page</h1>
-          <p class="text-sm text-green-800">Directorate of Immigration & Citizen Services</p>
+        <div class="container mx-auto px-5 py-2 flex flex-wrap items-center justify-between">
+            <div class="flex items-center">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="mr-3 h-12">
+                <div>
+                    <h1 class="text-lg md:text-xl font-semibold text-green-600">Electronic Travel Authorisation (eTA) Agencies Approval Page</h1>
+                    <p class="text-sm text-green-800">Directorate of Immigration & Citizen Services</p>
+                </div>
+            </div>
         </div>
-      </div>
     </nav>
-  
-    <div class="hero-background h-screen flex flex-col justify-center items-center text-white pt-20" style="background-image: url('{% static 'images/background.jpg' %}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-        <div class="w-full md:w-2/3 text-center">
-          <h1 class="text-xl md:text-2xl font-bold mb-4">All agencies must apply for approval before applying eTA for their clients.</h1>
-          <div class="flex justify-center space-x-4 mt-4">
-            <a href="{% url 'business_detail_view' %}" class="bg-white hover:bg-gray-100 text-green-700 font-bold py-2 px-6 rounded shadow-lg">Apply Now</a>
-            <button id="checkApplicationBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow-lg">Check Application</button>
-          </div>
+
+    <div class="hero-background min-h-screen flex flex-col justify-center items-center text-white pt-20" style="background-image: url('{% static 'images/background.jpg' %}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-xl md:text-2xl font-bold mb-4">All agencies must apply for approval before applying eTA for their clients.</h1>
+            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4 mt-4">
+                <a href="{% url 'business_detail_view' %}" class="bg-white hover:bg-gray-100 text-green-700 font-bold py-2 px-6 rounded shadow-lg">Apply Now</a>
+                <button id="checkApplicationBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow-lg">Check Application</button>
+            </div>
         </div>
-      </div>
-      
-  
-    <div class="grid grid-cols-2 gap-4 mt-8">
-      <div id="faqsCard" class="bg-white rounded shadow p-4 flex items-center cursor-pointer"> <!-- Notice the id here -->
-          <i class="fas fa-question-circle text-green-500 mr-2"></i>
-          <div>
-              <h2 class="font-semibold text-lg">FAQs</h2>
-              <p>Find answers to frequently asked questions here.</p>
-          </div>
-          <i class="fas fa-chevron-right ml-auto text-green-500"></i>
-      </div>
-      <!-- Left card -->
-      <div id="howToApplyCard" class="bg-white rounded shadow p-4 flex items-center cursor-pointer">
-          <i class="fas fa-file-signature text-green-500 mr-2"></i>
-          <div>
-              <h2 class="font-semibold text-lg">How to Apply</h2>
-              <p>Learn about the application process.</p>
-          </div>
-          <i class="fas fa-chevron-right ml-auto text-green-500"></i>
-      </div>
-  </div>
-  </div>
-  
-  <!-- Popup modal -->
-  <div id="applicationPopup" class="overlay">
-  <div class="popup">
-      <a class="close" href="#">&times;</a>
-      <div class="content">
-          <h2 class="text-xl font-bold mb-4">Application Process</h2>
-          <div class="overflow-auto" style="max-height: 400px;">
-              <div class="space-y-2">
-                  <p><span class="font-bold">Step 1:</span> Access the Registration Form</p>
-                  <p>Visit our platform's registration page.</p>
-                  
-                  <p><span class="font-bold">Step 2:</span> Fill in Business Details</p>
-                  <p>Begin by entering your business details in the designated fields. These include:</p>
-                  <ul class="list-inside list-disc">
-                      <li>Business Name</li>
-                      <li>Registration Number</li>
-                      <li>Business KRA PIN</li>
-                      <li>Business Address (including physical location, city, and country)</li>
-                      <li>Business Phone Number</li>
-                      <li>Business Email Address</li>
-                  </ul>
-                  <p>Ensure that all fields marked as mandatory are completed accurately.</p>
-                  
-                  <p><span class="font-bold">Step 3:</span> Attach Required Documents</p>
-                  <p>Upload the necessary documents as instructed. These may include:</p>
-                  <ul class="list-inside list-disc">
-                      <li>Business Registration Certificate</li>
-                      <li>Business Trading License</li>
-                      <li>Business Tax Compliance documents</li>
-                  </ul>
-                  <p>Make sure the documents are clear and legible before proceeding.</p>
-                  
-                  <p><span class="font-bold">Step 4:</span> Add Contact Persons</p>
-                  <p>If applicable, add up to three contact persons associated with the business. For each contact person, provide:</p>
-                  <ul class="list-inside list-disc">
-                      <li>First Name</li>
-                      <li>Last Name</li>
-                      <li>Mobile Number</li>
-                      <li>Email Address</li>
-                  </ul>
-                  <p>All fields for contact persons are mandatory.</p>
-                  
-                  <p><span class="font-bold">Step 5:</span> Include Credit Card Information</p>
-                  <p>If necessary, input credit card details. You can add up to three credit cards by specifying the Card Type (Visa/MasterCard/American Express) and providing the last 8 digits of each card.</p>
-                  
-                  <p><span class="font-bold">Step 6:</span> Review Your Application</p>
-                  <p>Once all required information is entered, review the entire application carefully. Ensure accuracy and completeness before proceeding.</p>
-                  
-                  <p><span class="font-bold">Step 7:</span> Submit Your Application</p>
-                  <p>If everything appears correct, click on the "Review" button to see a summary of your application. After reviewing the summary, click on the "Submit" button to finalize your application.</p>
-                  
-                  <p><span class="font-bold">Step 8:</span> Await Confirmation</p>
-                  <p>Upon submission, you will receive an email confirmation acknowledging receipt of your application. Each application will be assigned a unique 6-digit reference number for tracking purposes.</p>
-                  
-                  <p><span class="font-bold">Step 9:</span> Track Application Status</p>
-                  <p>Check your email regularly for updates on the status of your application. You can also log in to your account on our platform to monitor progress and any communication regarding your application.</p>
-              </div>
-          </div>
-      </div>
-  </div>
-  </div>
-  <div id="faqsPopup" class="overlay">
-  <div class="popup">
-      <a class="close" href="#">&times;</a>
-      <div class="content">
-          <h2 class="text-xl font-bold mb-4">Frequently Asked Questions (FAQs) - How to Apply</h2>
-          <div class="overflow-auto" style="max-height: 400px;">
-              <div class="space-y-2">
-                  <p><span class="font-bold">1. How do I begin the application process?</span></p>
-                  <p>To start the application process, navigate to the registration page on our platform.</p>
-  
-                  <p><span class="font-bold">2. What information do I need to provide in the initial part of the form?</span></p>
-                  <p>In the initial part of the form, you'll need to fill in essential business details including Business Name, Registration Number, Business KRA PIN, Business Address (including physical location, city, and country), Business Phone Number, and Business Email Address. Additionally, you'll be required to attach documents like Business Registration Certificate, Trading License, and Tax Compliance. All fields in this part are mandatory.</p>
-  
-                  <p><span class="font-bold">3. Can I add multiple contact persons to the application?</span></p>
-                  <p>Yes, after completing the initial part of the form, you can add up to three contact persons. For each contact person, you need to provide their First Name, Last Name, Mobile Number, and Email Address. All fields for contact persons are mandatory.</p>
-  
-                  <p><span class="font-bold">4. Is it possible to include more than one credit card in the application?</span></p>
-                  <p>Yes, you can add up to three credit cards to the application. For each credit card, specify the Card Type (Visa/MasterCard/American Express) and the last 8 digits of the card number.</p>
-  
-                  <p><span class="font-bold">5. What is the next step after filling out the form?</span></p>
-                  <p>After entering all the required information, review the details carefully before proceeding. Once you're satisfied, click on the "Review" button to see a summary of all the information you've entered.</p>
-  
-                  <p><span class="font-bold">6. How do I submit the application?</span></p>
-                  <p>Upon reviewing the details, if everything appears correct, click on the "Submit" button to finalize and submit your application.</p>
-  
-                  <p><span class="font-bold">7. What happens after I submit the application?</span></p>
-                  <p>After submission, you will receive an email confirmation acknowledging that your application has been successfully submitted. Each application will be assigned a unique 6-digit reference number for tracking purposes.</p>
-  
-                  <p><span class="font-bold">8. How can I track the status of my application?</span></p>
-                  <p>You will receive further notifications regarding the status of your application. Additionally, you can log in to your account on the platform to check the status and any updates on your application.</p>
-  
-                  <p><span class="font-bold">9. Is there a deadline for application submission?</span></p>
-                  <p>There is no specific deadline for application submission. However, it is recommended to submit your application at your earliest convenience to avoid any delays.</p>
-  
-              </div>
-          </div>
-      </div>
-  </div>
-  </div>
-  
-<!-- Add this inside the <body> tag -->
+    </div>
+
+    <div class="container mx-auto px-4 mt-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div id="faqsCard" class="bg-white rounded shadow p-4 flex items-center cursor-pointer">
+                <i class="fas fa-question-circle text-green-500 mr-2"></i>
+                <div>
+                    <h2 class="font-semibold text-lg">FAQs</h2>
+                    <p>Find answers to frequently asked questions here.</p>
+                </div>
+                <i class="fas fa-chevron-right ml-auto text-green-500"></i>
+            </div>
+            <div id="howToApplyCard" class="bg-white rounded shadow p-4 flex items-center cursor-pointer">
+                <i class="fas fa-file-signature text-green-500 mr-2"></i>
+                <div>
+                    <h2 class="font-semibold text-lg">How to Apply</h2>
+                    <p>Learn about the application process.</p>
+                </div>
+                <i class="fas fa-chevron-right ml-auto text-green-500"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup modal -->
+    <div id="applicationPopup" class="overlay">
+        <div class="popup">
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+                <h2 class="text-xl font-bold mb-4">Application Process</h2>
+                <div class="overflow-auto" style="max-height: 400px;">
+                    <div class="space-y-2">
+                        <p><span class="font-bold">Step 1:</span> Access the Registration Form</p>
+                        <p>Visit our platform's registration page.</p>
+                        
+                        <p><span class="font-bold">Step 2:</span> Fill in Business Details</p>
+                        <p>Begin by entering your business details in the designated fields. These include:</p>
+                        <ul class="list-inside list-disc">
+                            <li>Business Name</li>
+                            <li>Registration Number</li>
+                            <li>Business KRA PIN</li>
+                            <li>Business Address (including physical location, city, and country)</li>
+                            <li>Business Phone Number</li>
+                            <li>Business Email Address</li>
+                        </ul>
+                        <p>Ensure that all fields marked as mandatory are completed accurately.</p>
+                        
+                        <p><span class="font-bold">Step 3:</span> Attach Required Documents</p>
+                        <p>Upload the necessary documents as instructed. These may include:</p>
+                        <ul class="list-inside list-disc">
+                            <li>Business Registration Certificate</li>
+                            <li>Business Trading License</li>
+                            <li>Business Tax Compliance documents</li>
+                        </ul>
+                        <p>Make sure the documents are clear and legible before proceeding.</p>
+                        
+                        <p><span class="font-bold">Step 4:</span> Add Contact Persons</p>
+                        <p>If applicable, add up to three contact persons associated with the business. For each contact person, provide:</p>
+                        <ul class="list-inside list-disc">
+                            <li>First Name</li>
+                            <li>Last Name</li>
+                            <li>Mobile Number</li>
+                            <li>Email Address</li>
+                        </ul>
+                        <p>All fields for contact persons are mandatory.</p>
+                        
+                        <p><span class="font-bold">Step 5:</span> Include Credit Card Information</p>
+                        <p>If necessary, input credit card details. You can add up to three credit cards by specifying the Card Type (Visa/MasterCard/American Express) and providing the last 8 digits of each card.</p>
+                        
+                        <p><span class="font-bold">Step 6:</span> Review Your Application</p>
+                        <p>Once all required information is entered, review the entire application carefully. Ensure accuracy and completeness before proceeding.</p>
+                        
+                        <p><span class="font-bold">Step 7:</span> Submit Your Application</p>
+                        <p>If everything appears correct, click on the "Review" button to see a summary of your application. After reviewing the summary, click on the "Submit" button to finalize your application.</p>
+                        
+                        <p><span class="font-bold">Step 8:</span> Await Confirmation</p>
+                        <p>Upon submission, you will receive an email confirmation acknowledging receipt of your application. Each application will be assigned a unique 6-digit reference number for tracking purposes.</p>
+                        
+                        <p><span class="font-bold">Step 9:</span> Track Application Status</p>
+                        <p>Check your email regularly for updates on the status of your application. You can also log in to your account on our platform to monitor progress and any communication regarding your application.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="faqsPopup" class="overlay">
+        <div class="popup">
+            <a class="close" href="#">&times;</a>
+            <div class="content">
+                <h2 class="text-xl font-bold mb-4">Frequently Asked Questions (FAQs) - How to Apply</h2>
+                <div class="overflow-auto" style="max-height: 400px;">
+                    <div class="space-y-2">
+                        <p><span class="font-bold">1. How do I begin the application process?</span></p>
+                        <p>To start the application process, navigate to the registration page on our platform.</p>
+        
+                        <p><span class="font-bold">2. What information do I need to provide in the initial part of the form?</span></p>
+                        <p>In the initial part of the form, you'll need to fill in essential business details including Business Name, Registration Number, Business KRA PIN, Business Address (including physical location, city, and country), Business Phone Number, and Business Email Address. Additionally, you'll be required to attach documents like Business Registration Certificate, Trading License, and Tax Compliance. All fields in this part are mandatory.</p>
+        
+                        <p><span class="font-bold">3. Can I add multiple contact persons to the application?</span></p>
+                        <p>Yes, after completing the initial part of the form, you can add up to three contact persons. For each contact person, you need to provide their First Name, Last Name, Mobile Number, and Email Address. All fields for contact persons are mandatory.</p>
+        
+                        <p><span class="font-bold">4. Is it possible to include more than one credit card in the application?</span></p>
+                        <p>Yes, you can add up to three credit cards to the application. For each credit card, specify the Card Type (Visa/MasterCard/American Express) and the last 8 digits of the card number.</p>
+        
+                        <p><span class="font-bold">5. What is the next step after filling out the form?</span></p>
+                        <p>After entering all the required information, review the details carefully before proceeding. Once you're satisfied, click on the "Review" button to see a summary of all the information you've entered.</p>
+        
+                        <p><span class="font-bold">6. How do I submit the application?</span></p>
+                        <p>Upon reviewing the details, if everything appears correct, click on the "Submit" button to finalize and submit your application.</p>
+        
+                        <p><span class="font-bold">7. What happens after I submit the application?</span></p>
+                        <p>After submission, you will receive an email confirmation acknowledging that your application has been successfully submitted. Each application will be assigned a unique 6-digit reference number for tracking purposes.</p>
+        
+                        <p><span class="font-bold">8. How can I track the status of my application?</span></p>
+                        <p>You will receive further notifications regarding the status of your application. Additionally, you can log in to your account on the platform to check the status and any updates on your application.</p>
+        
+                        <p><span class="font-bold">9. Is there a deadline for application submission?</span></p>
+                        <p>There is no specific deadline for application submission. However, it is recommended to submit your application at your earliest convenience to avoid any delays.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="applicationModal" class="overlay">
-        <!-- Modal content -->
         <div class="modal">
             <div class="flex justify-between items-start">
                 <h2 class="text-2xl font-bold mb-2">Check Application Status</h2>
@@ -182,25 +181,24 @@
             <div id="status-popup"></div>
         </div>
     </div>
-   
 
- 
-  <div class="bg-green-800">
-    <div class="text-center text-white py-4">
-        <div class="inline-block">
-            <p>The Ministry of Interior and National Administration,</p>
-            <p>State Department for Immigration and Citizen Services,</p>
-            <p>Directorate of Immigration Services</p>
-          
+    <footer class="bg-green-800 py-4">
+        <div class="container mx-auto px-4">
+            <div class="text-center text-white">
+                <p>The Ministry of Interior and National Administration,</p>
+                <p>State Department for Immigration and Citizen Services,</p>
+                <p>Directorate of Immigration Services</p>
+                <p class="mt-2">&copy; 2024 All Rights Reserved.</p>
+            </div>
         </div>
-    </div>
-  </div>
-  <script src="{% static 'js/main.js' %}"></script>
-  
-  <script>
-    var searchApplicationStatusUrl = "{% url 'search_application_status' %}";
-</script>
-<script src="{% static 'js/popup.js' %}"></script>
-    
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <script>
+        var searchApplicationStatusUrl = "{% url 'search_application_status' %}";
+    </script>
+    <script src="{% static 'js/popup.js' %}"></script>
+
 </body>
 </html>

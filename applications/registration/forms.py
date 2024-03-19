@@ -108,6 +108,28 @@ class ContactPersonForm(forms.ModelForm):
         model = ContactPerson
         fields = ['first_name', 'last_name', 'mobile_number', 'email_address']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['first_name'].required = False
+        self.fields['last_name'].required = False
+        self.fields['mobile_number'].required = False
+        self.fields['email_address'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        mobile_number = cleaned_data.get('mobile_number')
+        email_address = cleaned_data.get('email_address')
+
+        # Check if any field is filled
+        if any([first_name, last_name, mobile_number, email_address]):
+            # If any field is filled, make all fields required
+            if not all([first_name, last_name, mobile_number, email_address]):
+                raise forms.ValidationError("Please fill in all fields for the contact or leave them all empty.")
+
+        return cleaned_data
+
 class CreditCardForm(forms.ModelForm):
     last_8_digits = forms.CharField(
         label='Last 8 Digits',
@@ -118,3 +140,19 @@ class CreditCardForm(forms.ModelForm):
     class Meta:
         model = CreditCard
         fields = ['card_type', 'last_8_digits']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['card_type'].required = False
+        self.fields['last_8_digits'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        card_type = cleaned_data.get('card_type')
+        last_8_digits = cleaned_data.get('last_8_digits')
+
+        if any([card_type, last_8_digits]):
+            if not all([card_type, last_8_digits]):
+                raise forms.ValidationError("Please fill in all fields for the credit card or leave them all empty.")
+
+        return cleaned_data

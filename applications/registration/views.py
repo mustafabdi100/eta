@@ -58,61 +58,71 @@ def business_detail_view(request):
     return render(request, 'registration/business_detail.html', {'form': form})
 
 @form_step_required('business_details', 'business_detail_view')
-
 def contact_person_view(request):
-    # Get the existing contact person data from the session
-    existing_contact_person = request.session.get('contact_person', {})
+    existing_contact_persons = request.session.get('contact_person', [])
 
     if request.method == 'POST':
-        form = ContactPersonForm(request.POST)
-        if form.is_valid():
-            contact_person_data = form.cleaned_data
+        forms = [ContactPersonForm(request.POST, prefix=str(i)) for i in range(1, 4)]
+        if all(form.is_valid() for form in forms):
+            contact_person_data = []
+            for form in forms:
+                if form.has_changed():
+                    contact_person = form.save(commit=False)
+                    contact_person.business = BusinessDetail.objects.last()
+                    contact_person_dict = contact_person.__dict__.copy()
+                    contact_person_dict.pop('_state', None)
+                    contact_person_data.append(contact_person_dict)
             request.session['contact_person'] = contact_person_data
-            request.session.modified = True  # Ensure the session is saved
+            request.session.modified = True
             return redirect('credit_card_view')
     else:
-        # If GET request or form is invalid, initialize the form with existing data
-        form = ContactPersonForm(initial=existing_contact_person)
+        forms = [ContactPersonForm(prefix=str(i), initial=existing_contact_persons[i-1] if i <= len(existing_contact_persons) else None) for i in range(1, 4)]
+        forms[0].fields['first_name'].required = True
+        forms[0].fields['last_name'].required = True
+        forms[0].fields['mobile_number'].required = True
+        forms[0].fields['email_address'].required = True
 
     context = {
-        'form': form,
+        'forms': forms,
     }
     return render(request, 'registration/contact_person.html', context)
 
 @form_step_required('contact_person', 'contact_person_view')
 def credit_card_view(request):
-    # Get the existing credit card data from the session
-    existing_credit_card = request.session.get('credit_card', {})
+    existing_credit_cards = request.session.get('credit_card', [])
 
     if request.method == 'POST':
-        form = CreditCardForm(request.POST)
-        if form.is_valid():
-            credit_card_data = form.cleaned_data
+        forms = [CreditCardForm(request.POST, prefix=str(i)) for i in range(1, 4)]
+        if all(form.is_valid() for form in forms):
+            credit_card_data = []
+            for form in forms:
+                if form.has_changed():
+                    credit_card = form.save(commit=False)
+                    credit_card.business = BusinessDetail.objects.last()
+                    credit_card_dict = credit_card.__dict__.copy()
+                    credit_card_dict.pop('_state', None)
+                    credit_card_data.append(credit_card_dict)
             request.session['credit_card'] = credit_card_data
-            request.session.modified = True  # Ensure the session is saved
+            request.session.modified = True
             return redirect('review_application')
     else:
-        # If GET request or form is invalid, initialize the form with existing data
-        form = CreditCardForm(initial=existing_credit_card)
+        forms = [CreditCardForm(prefix=str(i), initial=existing_credit_cards[i-1] if i <= len(existing_credit_cards) else None) for i in range(1, 4)]
 
     context = {
-        'form': form,
+        'forms': forms,
     }
     return render(request, 'registration/credit_card.html', context)
 
 
-
 def review_application(request):
-    # Fetch data from session
     business_details = request.session.get('business_details', {})
-    contact_person = request.session.get('contact_person', {})
-    credit_card = request.session.get('credit_card', {})
+    contact_persons = request.session.get('contact_person', [])
+    credit_cards = request.session.get('credit_card', [])
 
-    # Context to display the data for review
     context = {
         'business_details': business_details,
-        'contact_person': contact_person,
-        'credit_card': credit_card,
+        'contact_persons': contact_persons,
+        'credit_cards': credit_cards,
     }
 
     return render(request, 'registration/review_application.html', context)
@@ -125,48 +135,37 @@ def generate_unique_reference():
 
 def final_submission_view(request):
     if request.method == 'POST':
-        # Ensure there's data to submit
         if 'business_details' in request.session and 'contact_person' in request.session and 'credit_card' in request.session:
-            # Retrieve data from session
             business_details_data = request.session.pop('business_details')
             contact_person_data = request.session.pop('contact_person')
             credit_card_data = request.session.pop('credit_card')
 
-            # Generate a unique reference number
             reference_number = generate_unique_reference()
             business_details_data['reference_number'] = reference_number
 
-            # Exclude file fields from initial creation to avoid issues with unsaved model instance
             file_fields = ['registration_certificate', 'trading_license', 'tax_compliance_certificate']
             file_data = {field: business_details_data.pop(field) for field in file_fields if field in business_details_data}
 
-            # Create the BusinessDetail instance without file fields
             business_detail = BusinessDetail.objects.create(**business_details_data)
 
-            # Handle file uploads
             for file_field, temp_file_path in file_data.items():
                 if temp_file_path:
-                    # Use Django's default storage API to open the file. This works with S3 if configured.
                     with default_storage.open(temp_file_path, 'rb') as file:
-                        # Save the file to the model
                         getattr(business_detail, file_field).save(os.path.basename(temp_file_path), File(file), save=True)
 
-            # Create ContactPerson instance
-            ContactPerson.objects.create(business=business_detail, **contact_person_data)
+            for contact_person in contact_person_data:
+                ContactPerson.objects.create(business=business_detail, **contact_person)
 
-            # Create CreditCard instance
-            CreditCard.objects.create(business=business_detail, **credit_card_data)
+            for credit_card in credit_card_data:
+                CreditCard.objects.create(business=business_detail, **credit_card)
 
-            # Clear session data for contact person and credit card to prevent re-use
             if 'contact_person' in request.session:
                 del request.session['contact_person']
             if 'credit_card' in request.session:
                 del request.session['credit_card']
 
-            # Return the reference number as a JSON response
             return JsonResponse({'reference_number': reference_number})
 
-    # If there's no data in the session (e.g., direct access), redirect to the start of the form process
     return redirect('business_detail_view')
 
 

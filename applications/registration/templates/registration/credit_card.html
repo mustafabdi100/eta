@@ -15,34 +15,64 @@
             font-family: 'Roboto', sans-serif;
             font-size: 0.8rem;
         }
-        .form-input, select, input[type="text"], button {
-            transition: border 0.3s ease;
-            font-size: 0.8rem;
-            padding: 0.64rem 0.8rem;
-        }
-        .form-input:focus, select:focus, input[type="text"]:focus {
-            border-color: #68D391;
-            box-shadow: none;
-        }
-        .mb-4 {
-            margin-bottom: 0.8rem;
-        }
-        .mt-4 {
-            margin-top: 0.8rem;
-        }
-        .w-full {
-            width: 100%;
-        }
-        .rounded-lg {
-            border-radius: 0.5rem;
-        }
-        .border-2 {
-            border-width: 2px;
-        }
-        .text-red-500 {
-            color: #f87171;
-        }
+       
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var creditCardForms = $('.credit-card-form');
+            var addCreditCardButton = $('#add-credit-card');
+    
+            creditCardForms.not(':first').hide();
+    
+            addCreditCardButton.click(function() {
+                var visibleForm = creditCardForms.filter(':visible');
+                var nextForm = visibleForm.next('.credit-card-form');
+    
+                if (nextForm.length) {
+                    visibleForm.find('.accordion-header').addClass('active');
+                    visibleForm.find('.accordion-content').show();
+                    visibleForm.wrap('<div class="accordion"></div>');
+                    nextForm.show().find('.accordion-header').trigger('click');
+                } else {
+                    addCreditCardButton.prop('disabled', true);
+                }
+            });
+    
+            $(document).on('click', '.accordion-header', function() {
+                var accordionContent = $(this).next('.accordion-content');
+                if (!$(this).hasClass('active')) {
+                    creditCardForms.find('.accordion-content').not(accordionContent).slideUp();
+                    creditCardForms.find('.accordion-header').not(this).removeClass('active');
+                    $(this).addClass('active');
+                    accordionContent.slideDown();
+                } else {
+                    $(this).removeClass('active');
+                    accordionContent.slideUp();
+                }
+            });
+    
+            $('form').submit(function(e) {
+                var invalidOptionalForm = false;
+                creditCardForms.each(function() {
+                    var form = $(this);
+                    var formFields = form.find('input[required], select[required]');
+                    var filledFields = formFields.filter(function() {
+                        return $(this).val().trim() !== '';
+                    });
+                    if (filledFields.length > 0 && filledFields.length !== formFields.length) {
+                        invalidOptionalForm = true;
+                        form.find('.accordion-header').trigger('click');
+                        return false;
+                    }
+                });
+                if (invalidOptionalForm) {
+                    e.preventDefault();
+                    alert('Please fill in all fields for the credit cards or leave them empty.');
+                }
+            });
+        });
+    </script>
 </head>
 <body class="bg-white">
     <div class="container mx-auto px-4 py-8">
@@ -50,32 +80,67 @@
         <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
             <form method="post">
                 {% csrf_token %}
-                <div class="mb-6 p-4 border-l-4 border-green-500">
-                    <h2 class="text-xl font-semibold mb-4 text-green-800">Credit Card Details</h2>
-                    <!-- Card Type -->
-                    <div class="mb-4">
-                        <label for="id_card_type" class="block text-sm font-medium text-gray-700">Card Type:</label>
-                        <select name="card_type" id="id_card_type" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg">
-                            <option value="">Select Card Type</option>
-                            <option value="Visa" {% if form.card_type.value == "Visa" %}selected{% endif %}>Visa</option>
-                            <option value="MasterCard" {% if form.card_type.value == "MasterCard" %}selected{% endif %}>MasterCard</option>
-                            <option value="American Express" {% if form.card_type.value == "American Express" %}selected{% endif %}>American Express</option>
-                        </select>
-                        {% if form.card_type.errors %}
-                            <p class="text-red-500 text-xs">{{ form.card_type.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-                    <!-- Last 8 Digits -->
-                    <div class="mt-4">
-                        <label for="id_last_8_digits" class="block text-sm font-medium text-gray-700">Last 8 Digits:</label>
-                        <input type="text" name="last_8_digits" id="id_last_8_digits" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg" maxlength="8" placeholder="12345678" value="{{ form.last_8_digits.value|default_if_none:'' }}">
-                        {% if form.last_8_digits.errors %}
-                            <p class="text-red-500 text-xs">{{ form.last_8_digits.errors.0 }}</p>
-                        {% endif %}
+                <div id="credit-card-form-1" class="credit-card-form mb-6">
+                    <div class="mb-6 p-4 border-l-4 border-green-500">
+                        <h2 class="text-xl font-semibold mb-4 text-green-800">Credit Card 1 Details</h2>
+                        <!-- Card Type -->
+                        <div class="mb-4">
+                            <label for="id_1-card_type" class="block text-sm font-medium text-gray-700">Card Type:</label>
+                            <select name="1-card_type" id="id_1-card_type" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg">
+                                <option value="">Select Card Type</option>
+                                <option value="Visa" {% if forms.0.card_type.value == "Visa" %}selected{% endif %}>Visa</option>
+                                <option value="MasterCard" {% if forms.0.card_type.value == "MasterCard" %}selected{% endif %}>MasterCard</option>
+                                <option value="American Express" {% if forms.0.card_type.value == "American Express" %}selected{% endif %}>American Express</option>
+                            </select>
+                            {% if forms.0.card_type.errors %}
+                                <p class="text-red-500 text-xs">{{ forms.0.card_type.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <!-- Last 8 Digits -->
+                        <div class="mt-4">
+                            <label for="id_1-last_8_digits" class="block text-sm font-medium text-gray-700">Last 8 Digits:</label>
+                            <input type="text" name="1-last_8_digits" id="id_1-last_8_digits" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg" maxlength="8" placeholder="12345678" value="{{ forms.0.last_8_digits.value|default_if_none:'' }}">
+                            {% if forms.0.last_8_digits.errors %}
+                                <p class="text-red-500 text-xs">{{ forms.0.last_8_digits.errors.0 }}</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+                {% for form in forms|slice:"1:" %}
+                    <div id="credit-card-form-{{ forloop.counter|add:1 }}" class="credit-card-form mb-6 hidden">
+                        <div class="accordion-header cursor-pointer bg-green-100 p-4 rounded-lg mb-2">
+                            <h2 class="text-xl font-semibold text-green-800">Credit Card {{ forloop.counter|add:1 }} Details</h2>
+                        </div>
+                        <div class="accordion-content hidden">
+                            <div class="mb-6 p-4 border-l-4 border-green-500">
+                                <!-- Card Type -->
+                                <div class="mb-4">
+                                    <label for="id_{{ form.prefix }}-card_type" class="block text-sm font-medium text-gray-700">Card Type:</label>
+                                    <select name="{{ form.prefix }}-card_type" id="id_{{ form.prefix }}-card_type" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg">
+                                        <option value="">Select Card Type</option>
+                                        <option value="Visa" {% if form.card_type.value == "Visa" %}selected{% endif %}>Visa</option>
+                                        <option value="MasterCard" {% if form.card_type.value == "MasterCard" %}selected{% endif %}>MasterCard</option>
+                                        <option value="American Express" {% if form.card_type.value == "American Express" %}selected{% endif %}>American Express</option>
+                                    </select>
+                                    {% if form.card_type.errors %}
+                                        <p class="text-red-500 text-xs">{{ form.card_type.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                                <!-- Last 8 Digits -->
+                                <div class="mt-4">
+                                    <label for="id_{{ form.prefix }}-last_8_digits" class="block text-sm font-medium text-gray-700">Last 8 Digits:</label>
+                                    <input type="text" name="{{ form.prefix }}-last_8_digits" id="id_{{ form.prefix }}-last_8_digits" class="form-input w-full border-2 border-green-200 focus:border-green-400 focus:ring-0 py-2 px-3 rounded-lg" maxlength="8" placeholder="12345678" value="{{ form.last_8_digits.value|default_if_none:'' }}">
+                                    {% if form.last_8_digits.errors %}
+                                        <p class="text-red-500 text-xs">{{ form.last_8_digits.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
                 <div class="flex justify-between space-x-4 mt-6">
                     <a href="{% url 'contact_person_view' %}" class="py-2 px-6 border-2 border-green-600 text-green-600 font-semibold rounded-lg hover:bg-green-50">Previous</a>
+                    <button type="button" id="add-credit-card" class="py-2 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 mr-4">Add Another Credit Card</button>
                     <button type="submit" class="py-2 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700">Review</button>
                 </div>
             </form>

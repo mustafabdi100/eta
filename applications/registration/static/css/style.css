@@ -112,3 +112,51 @@
   opacity: 1; /* Fully opaque */
 }
 
+.form-input, select, input[type="tel"], input[type="email"], input[type="text"], input[type="file"], button {
+  transition: border 0.3s ease;
+  font-size: 0.8rem; /* Adjust font size */
+  padding: 0.64rem 0.8rem; /* Adjust padding, originally was py-2 px-3 */
+}
+.form-input:focus, select:focus, input[type="tel"]:focus, input[type="email"]:focus, input[type="text"]:focus, input[type="file"]:focus {
+  border-color: #68D391;
+  box-shadow: none;
+}
+.mb-4 { /* Adjust margins */
+  margin-bottom: 0.8rem; /* Originally mb-4 */
+}
+.w-full { /* Might not need adjustment, as it will always take full width */
+  width: 100%;
+}
+.rounded-lg { /* Border radius adjustments if needed */
+  border-radius: 0.5rem;
+}
+.border-2 { /* Border width, might not need adjustment */
+  border-width: 2px;
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.stat-box-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563; /* Adjust based on your preference */
+}
+
+.stat-box-number {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.stat-icon {
+  font-size: 1.5rem; /* Adjust icon size as needed */
+}
+

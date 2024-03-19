@@ -144,6 +144,7 @@
     </div>
 
     <!-- Business Details Section -->
+    <h2>Business Details</h2>
     <div class="card">
         <div class="detail-item">
             <p class="detail-label">Business Name:</p>
@@ -179,33 +180,39 @@
         </div>
     </div>
 
-    <!-- Contact Person Section -->
-    <div class="card">
-        <div class="detail-item">
-            <p class="detail-label">Name:</p>
-            <p class="detail-value">{{ contact_person.first_name }} {{ contact_person.last_name }}</p>
-        </div>
-        <div class="detail-item">
-            <p class="detail-label">Phone Number:</p>
-            <p class="detail-value">{{ contact_person.mobile_number }}</p>
-        </div>
-        <div class="detail-item">
-            <p class="detail-label">Email Address:</p>
-            <p class="detail-value">{{ contact_person.email_address }}</p>
-        </div>
-    </div>
+     <!-- Contact Person Section -->
+     <h2>Contact Persons</h2>
+     {% for contact_person in contact_persons %}
+     <div class="card">
+         <div class="detail-item">
+             <p class="detail-label">Name:</p>
+             <p class="detail-value">{{ contact_person.first_name }} {{ contact_person.last_name }}</p>
+         </div>
+         <div class="detail-item">
+             <p class="detail-label">Phone Number:</p>
+             <p class="detail-value">{{ contact_person.mobile_number }}</p>
+         </div>
+         <div class="detail-item">
+             <p class="detail-label">Email Address:</p>
+             <p class="detail-value">{{ contact_person.email_address }}</p>
+         </div>
+     </div>
+ {% endfor %}
 
-    <!-- Credit Card Section -->
-    <div class="card">
-        <div class="detail-item">
-            <p class="detail-label">Type:</p>
-            <p class="detail-value">{{ credit_card.card_type }}</p>
-        </div>
-        <div class="detail-item">
-            <p class="detail-label">Last 8 digits:</p>
-            <p class="detail-value">XXXX XXXX {{ credit_card.last_8_digits }}</p>
-        </div>
-    </div>
+ <!-- Credit Card Section -->
+ <h2>Credit Cards</h2>
+ {% for credit_card in credit_cards %}
+     <div class="card">
+         <div class="detail-item">
+             <p class="detail-label">Type:</p>
+             <p class="detail-value">{{ credit_card.card_type }}</p>
+         </div>
+         <div class="detail-item">
+             <p class="detail-label">Last 8 digits:</p>
+             <p class="detail-value">XXXX XXXX {{ credit_card.last_8_digits }}</p>
+         </div>
+     </div>
+ {% endfor %}
 
     
 <div class="buttons">
