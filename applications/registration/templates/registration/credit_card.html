@@ -2,77 +2,6 @@
 {% block content %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Credit Card Details</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.8rem;
-        }
-       
-    </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            var creditCardForms = $('.credit-card-form');
-            var addCreditCardButton = $('#add-credit-card');
-    
-            creditCardForms.not(':first').hide();
-    
-            addCreditCardButton.click(function() {
-                var visibleForm = creditCardForms.filter(':visible');
-                var nextForm = visibleForm.next('.credit-card-form');
-    
-                if (nextForm.length) {
-                    visibleForm.find('.accordion-header').addClass('active');
-                    visibleForm.find('.accordion-content').show();
-                    visibleForm.wrap('<div class="accordion"></div>');
-                    nextForm.show().find('.accordion-header').trigger('click');
-                } else {
-                    addCreditCardButton.prop('disabled', true);
-                }
-            });
-    
-            $(document).on('click', '.accordion-header', function() {
-                var accordionContent = $(this).next('.accordion-content');
-                if (!$(this).hasClass('active')) {
-                    creditCardForms.find('.accordion-content').not(accordionContent).slideUp();
-                    creditCardForms.find('.accordion-header').not(this).removeClass('active');
-                    $(this).addClass('active');
-                    accordionContent.slideDown();
-                } else {
-                    $(this).removeClass('active');
-                    accordionContent.slideUp();
-                }
-            });
-    
-            $('form').submit(function(e) {
-                var invalidOptionalForm = false;
-                creditCardForms.each(function() {
-                    var form = $(this);
-                    var formFields = form.find('input[required], select[required]');
-                    var filledFields = formFields.filter(function() {
-                        return $(this).val().trim() !== '';
-                    });
-                    if (filledFields.length > 0 && filledFields.length !== formFields.length) {
-                        invalidOptionalForm = true;
-                        form.find('.accordion-header').trigger('click');
-                        return false;
-                    }
-                });
-                if (invalidOptionalForm) {
-                    e.preventDefault();
-                    alert('Please fill in all fields for the credit cards or leave them empty.');
-                }
-            });
-        });
-    </script>
 </head>
 <body class="bg-white">
     <div class="container mx-auto px-4 py-8">
@@ -140,7 +69,10 @@
                 {% endfor %}
                 <div class="flex justify-between space-x-4 mt-6">
                     <a href="{% url 'contact_person_view' %}" class="py-2 px-6 border-2 border-green-600 text-green-600 font-semibold rounded-lg hover:bg-green-50">Previous</a>
-                    <button type="button" id="add-credit-card" class="py-2 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 mr-4">Add Another Credit Card</button>
+                    <div>
+                        <button type="button" id="add-credit-card" class="py-2 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 mr-4">Add Another Credit Card</button>
+                        <span class="text-sm text-gray-500">(Optional)</span>
+                    </div>
                     <button type="submit" class="py-2 px-6 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700">Review</button>
                 </div>
             </form>
